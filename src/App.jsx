@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from 'react'
 import './App.css'
 import LanguageSelector from './components/LanguageSelector';
 import Progress from './components/Progress';
-import { pipeline } from '@huggingface/transformers'
 import ModelSelector from './components/ModelSelector';
 import { MODEL } from './constant';
 import { default as axios } from 'axios';
@@ -16,8 +15,7 @@ function App() {
 
   // Inputs and outputs
   const [input, setInput] = useState('What is the latest news on NASA?');
-  const [sourceLanguage, setSourceLanguage] = useState('eng_Latn');
-  const [targetLanguage, setTargetLanguage] = useState('fra_Latn');
+
   const [selectedModel, setSelectedModel] = useState(MODEL.MIXED_BREAD_AI)
   const [searchResult, setSearchResult] = useState([])
   const [output, setOutput] = useState('');
@@ -81,15 +79,6 @@ function App() {
     
   });
 
-  const translate = () => {
-     setDisabled(true);
-  setOutput('');
-  worker.current.postMessage({
-    text: input,
-    src_lang: sourceLanguage,
-    tgt_lang: targetLanguage,
-  });
-  }
 
   const getResults = () => {
 
@@ -98,10 +87,10 @@ function App() {
         alert('Empty input')
         return
     }
-
+    setSearchResult([])
     axios.post('http://localhost:3000/search', {
       model:"Xenova",
-      query: ""
+      query: `${input}`
     }).then(response => {
       console.log(response)
       setSearchResult(response.data.points)
@@ -153,8 +142,10 @@ function App() {
         </div>
       ))}
     </div>
-
-    <Answers answers={searchResult} question={input} />
+    
+      {searchResult?.length && (
+        <Answers answers1={searchResult} question={input} />
+      )}
   </>
   )
 }

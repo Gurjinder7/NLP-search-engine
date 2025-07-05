@@ -112,11 +112,11 @@ function App() {
       <div className=''>
         {/* <textarea value={input} rows={3} onChange={e => setInput(e.target.value)}></textarea> */}
         {/* <textarea value={output} rows={3} readOnly></textarea> */}
-        <div class="flex flex-col my-4">
+        <div className="flex flex-col my-4 justify-center">
           {/* <label for="" class="form-label">Name</label> */}
           <input
             type="text"
-            className=" mb-3 bg-gray-100 p-3 w-100"
+            className=" mb-3 bg-gray-100 p-3 w-2/3 m-auto"
             name=""
             id=""
             aria-describedby="helpId"
@@ -144,7 +144,7 @@ function App() {
     </div>
     
       {searchResult?.length && (
-        <Answers answers1={searchResult} question={input} />
+        <Answers answers={searchResult} question={input} />
       )}
   </>
   )

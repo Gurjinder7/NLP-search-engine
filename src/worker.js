@@ -29,7 +29,7 @@ class MySummarizationPipeline {
 
 class MySentimentPipeline {
     static task = "sentiment-analysis"
-    static model = "Xenova/distilbert-base-uncased-finetuned-sst-2-english"
+    static model = "Xenova/bert-base-multilingual-uncased-sentiment"
     static instance = null
 
     static async getInstance() {

@@ -21,6 +21,7 @@ function App() {
   const [output, setOutput] = useState("");
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [summaryAnswer, setSummaryAnswer] = useState(null);
+  const [sentimentAnswers, setSentimentAnswers] = useState([])
 
   const worker = useRef(null);
   const sentimentWorker = useRef(null);
@@ -158,7 +159,8 @@ function App() {
           // answer.summary = e?.data?.output[0].summary_text;
           // setSelectedAnswer(answer)
           // setSearchResult(sentimentAns)
-          setSummaryAnswer(answer);
+          // setSummaryAnswer(answer);
+          setSentimentAnswers(sentimentAns)
           setDisabled(false);
         }
         break;
@@ -204,9 +206,7 @@ function App() {
       alert("Empty input");
       return;
     }
-    setSearchResult([]);
-    setSelectedAnswer(null);
-    setSummaryAnswer(null);
+   resetAll()
     axios
       .post("http://localhost:3000/search", {
         model: "Xenova",
@@ -228,6 +228,13 @@ function App() {
       text: data1.payload.description,
     });
   };
+
+  const resetAll = () => {
+    setSearchResult([]);
+    setSelectedAnswer(null);
+    setSummaryAnswer(null);
+    setSentimentAnswers([])
+  }
   return (
     <>
       <h1 className="text-red-400">Transformers.js</h1>
@@ -252,6 +259,7 @@ function App() {
               placeholder=""
               value={input}
               onChange={(e) => setInput(e.target.value)}
+              onClick={() => resetAll()}
             />
             {/* <small id="helpId" className="">Help text</small> */}
           </div>
@@ -266,9 +274,9 @@ function App() {
         Search
       </button>
 
-      {searchResult?.length > 0 && (
+      {sentimentAnswers?.length > 0 && (
         <Answers
-          answers={searchResult}
+          answers={sentimentAnswers}
           question={input}
           worker={worker}
           getSummary1={handleSummary}

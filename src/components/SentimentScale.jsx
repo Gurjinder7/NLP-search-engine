@@ -15,7 +15,7 @@ const SentimentScale = ({sentiment}) => {
                 <span className="font-semibold">Neutral</span>
                 <span className="font-semibold">Positive</span>
             </div>
-            <div style={{'width':`${scale*20}%`}} className="bg-blue-500 rounded-xl text-blue-500 h-[10px] text-[2px]">{sentiment.label}</div>
+            <div style={{'width':`${scale*20}%`}} className="bg-blue-300 rounded-xl text-blue-500 h-[10px] text-[2px]">{sentiment.label}</div>
         </div>
      );
 }

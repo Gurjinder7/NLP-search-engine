@@ -116,7 +116,7 @@ function App() {
           {/* <label for="" class="form-label">Name</label> */}
           <input
             type="text"
-            className=" mb-3 bg-gray-100 p-3 w-2/3 m-auto"
+            className=" mb-3 bg-gray-100 p-3 "
             name=""
             id=""
             aria-describedby="helpId"
@@ -124,24 +124,13 @@ function App() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
           />
-          <small id="helpId" className="">Help text</small>
+          {/* <small id="helpId" className="">Help text</small> */}
         </div>
         
       </div>
     </div>
 
-    <button disabled={disabled} onClick={getResults}>Search</button>
-
-    <div className='progress-bars-container'>
-      {ready === false && (
-        <label>Loading models... (only run once)</label>
-      )}
-      {progressItems.map(data => (
-        <div key={data.file}>
-          <Progress text={data.file} percentage={data.progress} />
-        </div>
-      ))}
-    </div>
+    <button disabled={disabled} onClick={getResults} className='!bg-blue-600 text-white'>Search</button>
     
       {searchResult?.length && (
         <Answers answers={searchResult} question={input} />

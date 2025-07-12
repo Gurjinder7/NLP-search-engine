@@ -82,8 +82,14 @@ const Answers = ({ answers, question }) => {
 
   const generateSummary = async (e, answer) => {
     console.log(answer);
+
+    if(answer.summary) {
+      return
+    }
     setLoader(true)
-    ss1(displayDescription(answer))
+    setTimeout(() => {
+
+      ss1(displayDescription(answer))
       .then((res) => {
         console.log(res);
         let updatedAnswer = [];
@@ -94,16 +100,17 @@ const Answers = ({ answers, question }) => {
           updatedAnswer.push(item);
         });
         setAnswers1(updatedAnswer);
-
+        
         // setAnswers(prev =>
-        //     prev.map(ans => ans.id === answer.id ? { ...answer, summary: res[0].summary_text} : answer)
-        // )
-      })
-      .catch((err) => {
-        console.log(err);
-      }).finally(() =>{
-        setLoader(false)
-      });
+          //     prev.map(ans => ans.id === answer.id ? { ...answer, summary: res[0].summary_text} : answer)
+          // )
+        })
+        .catch((err) => {
+          console.log(err);
+        }).finally(() =>{
+          setLoader(false)
+        });
+      },[1000])
   };
 
   const getSentimentOfResult = async (title) => {
@@ -130,10 +137,13 @@ const Answers = ({ answers, question }) => {
   // console.log(removeStopwords(arr));
   return (
     <div>
-      {loader ? (
-        <p>Loading....</p>
-      ) : (
-        <ul>
+     
+        {loader && (
+          <div className="w-screen h-screen fixed top-1/2 left-1/2 z-10">
+            <div className="loader"></div>
+          </div>
+        )}
+        <ul className={`${loader ? 'blur-sm' : ''}`}>
           {answers1?.map((item) => (
             <div key={item.id} className="my-5 p-2">
               <h3 className="text-xl font-semibold">{item.payload.title}</h3>
@@ -176,7 +186,7 @@ const Answers = ({ answers, question }) => {
             </div>
           ))}
         </ul>
-      )}
+      {/* )} */}
     </div>
   );
 };

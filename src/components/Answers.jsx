@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { getSentiment, haveSummary } from "../worker";
 import SentimentScale from "./SentimentScale";
 
-const Answers = ({ answers, question }) => {
+const Answers = ({ answers, question, summary = null, getSummary1 = () => {}, summaryAnswer }) => {
   const [sum1, setSum1] = useState([]);
   const [sum2, setSum2] = useState(null);
   const [answers1, setAnswers1] = useState([]);
@@ -17,6 +17,22 @@ const Answers = ({ answers, question }) => {
   //   setAnswers(answers1)
   // },[answers1])
 
+
+  useEffect(() => {
+    console.log(summaryAnswer)
+    let summaryAns = []
+    if(summaryAnswer){
+      answers?.map((item) => {
+        if(item.id === summaryAnswer.id) {
+          summaryAns.push(summaryAnswer)
+        } else {
+          summaryAns.push(item)
+        }
+      })
+      setAnswers1(summaryAns)
+      setLoader(false)
+    }
+  },[summaryAnswer, answers])
   console.log(answers);
 
   console.log(sum1);
@@ -24,21 +40,22 @@ const Answers = ({ answers, question }) => {
   useEffect(() => {
     let titles = [];
     if (answers.length) {
-      for (const answer of answers) {
-        titles.push(answer?.payload.title);
-      }
+      // for (const answer of answers) {
+      //   titles.push(answer?.payload.title);
+      // }
 
-      // setSentiments(titles)
-      sentimentIs(titles).then((res) => {
-        console.log(res);
-        let updatedAnswer = [];
-        for (let i = 0; i < answers.length; i++) {
-          answers[i].sentiment = res[i];
-          updatedAnswer.push(answers[i]);
-        }
+      // // setSentiments(titles)
+      // sentimentIs(titles).then((res) => {
+      //   console.log(res);
+      //   let updatedAnswer = [];
+      //   for (let i = 0; i < answers.length; i++) {
+      //     answers[i].sentiment = res[i];
+      //     updatedAnswer.push(answers[i]);
+      //   }
 
-        setAnswers1(updatedAnswer);
-      });
+      //   setAnswers1(updatedAnswer);
+      // });
+      setAnswers1(answers)
     }
   }, []);
 
@@ -66,8 +83,8 @@ const Answers = ({ answers, question }) => {
     });
   };
 
-  const ss1 = async (text) => await haveSummary(text);
-  const sentimentIs = async (text) => await getSentiment(text);
+  // const ss1 = async (text) => await haveSummary(text);
+  // const sentimentIs = async (text) => await getSentiment(text);
 
   const displayDescription = (answer) => {
     console.log(answer);
@@ -86,47 +103,49 @@ const Answers = ({ answers, question }) => {
     if(answer.summary) {
       return
     }
-    setLoader(true)
-    setTimeout(() => {
 
-      ss1(displayDescription(answer))
-      .then((res) => {
-        console.log(res);
-        let updatedAnswer = [];
-        answers.map((item) => {
-          if (item.id == answer.id) {
-            item.summary = res[0].summary_text;
-          }
-          updatedAnswer.push(item);
-        });
-        setAnswers1(updatedAnswer);
+    getSummary1(answer)
+    setLoader(true)
+    // setTimeout(() => {
+
+    //   ss1(displayDescription(answer))
+    //   .then((res) => {
+    //     console.log(res);
+    //     let updatedAnswer = [];
+    //     answers.map((item) => {
+    //       if (item.id == answer.id) {
+    //         item.summary = res[0].summary_text;
+    //       }
+    //       updatedAnswer.push(item);
+    //     });
+    //     setAnswers1(updatedAnswer);
         
-        // setAnswers(prev =>
-          //     prev.map(ans => ans.id === answer.id ? { ...answer, summary: res[0].summary_text} : answer)
-          // )
-        })
-        .catch((err) => {
-          console.log(err);
-        }).finally(() =>{
-          setLoader(false)
-        });
-      },[1000])
+    //     // setAnswers(prev =>
+    //       //     prev.map(ans => ans.id === answer.id ? { ...answer, summary: res[0].summary_text} : answer)
+    //       // )
+    //     })
+    //     .catch((err) => {
+    //       console.log(err);
+    //     }).finally(() =>{
+    //       setLoader(false)
+    //     });
+    //   },[1000])
   };
 
   const getSentimentOfResult = async (title) => {
-    let sentiment = {
-      label: "",
-      score: 0,
-    };
+    // let sentiment = {
+    //   label: "",
+    //   score: 0,
+    // };
 
-    sentimentIs(title).then((res) => {
-      console.log(res);
-      sentiment.label = res[0].label;
-      sentiment.score = res[0].score;
-    });
+    // sentimentIs(title).then((res) => {
+    //   console.log(res);
+    //   sentiment.label = res[0].label;
+    //   sentiment.score = res[0].score;
+    // });
 
-    console.log("sentiment", sentiment);
-    return sentiment;
+    // console.log("sentiment", sentiment);
+    // return sentiment;
   };
 
   console.log(answers);

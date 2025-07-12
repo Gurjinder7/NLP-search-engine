@@ -16,8 +16,8 @@ class MySummarizationPipeline {
     static model = 'Xenova/distilbart-cnn-6-6'
     static instance = null
 
-    static async getInstance() {
-        this.instance ??= pipeline(this.task, this.model);
+    static async getInstance(progress_callback = null) {
+        this.instance ??= pipeline(this.task, this.model, {progress_callback});
         return this.instance
     }
 
@@ -39,11 +39,29 @@ class MySentimentPipeline {
 }
 
 
-export const haveSummary = await MySummarizationPipeline.getInstance()
+export let haveSummary = null
 
-export const getSentiment = await MySentimentPipeline.getInstance()
+export const getSentiment = null
 // console.log(dd)
 
+
+self.addEventListener('message', async (event) => {
+    console.log(event.data)
+    const haveSummary1 = await MySummarizationPipeline.getInstance(x => {
+        self.postMessage(x)
+    })
+
+    let output = null
+    if(event.data.text) {
+        output = await haveSummary1(event.data.text)
+
+    }
+
+    self.postMessage({
+        status: 'complete',
+        output
+    })
+})
 // // Listen for messages from the main thread
 // self.addEventListener('message', async (event) => {
 //   // Retrieve the translation pipeline. When called for the first time,

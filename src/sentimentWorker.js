@@ -3,7 +3,7 @@ import {pipeline } from '@huggingface/transformers'
 
 class MySentimentPipeline {
     static task = "sentiment-analysis"
-    static model = "Xenova/bert-base-multilingual-uncased-sentiment"
+    static model = "Xenova/distilbert-base-uncased-finetuned-sst-2-english"
     static instance = null
 
     static async getInstance() {

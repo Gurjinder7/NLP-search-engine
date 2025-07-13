@@ -21,7 +21,8 @@ function App() {
   const [output, setOutput] = useState("");
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [summaryAnswer, setSummaryAnswer] = useState(null);
-  const [sentimentAnswers, setSentimentAnswers] = useState([])
+  const [sentimentAnswers, setSentimentAnswers] = useState([]);
+  const [loader, setLoader] = useState(false)
 
   const worker = useRef(null);
   const sentimentWorker = useRef(null);
@@ -39,7 +40,7 @@ function App() {
     );
 
     const onSummaryMessageReceived = (e) => {
-      // console.log(e.data);
+      console.log(e.data);
       let answer = selectedAnswer;
       switch (e.data.status) {
         case "initiate":
@@ -150,17 +151,17 @@ function App() {
         if (searchResult.length) {
           console.log(e?.data?.output);
           let sentiments = e?.data?.output;
-          let sentimentAns = []
-           for(let i = 0; i < searchResult.length; i++) {
-              searchResult[i].sentiment = sentiments[i]
-              sentimentAns.push(searchResult[i])
-            }
-          
+          let sentimentAns = [];
+          for (let i = 0; i < searchResult.length; i++) {
+            searchResult[i].sentiment = sentiments[i];
+            sentimentAns.push(searchResult[i]);
+          }
+
           // answer.summary = e?.data?.output[0].summary_text;
           // setSelectedAnswer(answer)
           // setSearchResult(sentimentAns)
           // setSummaryAnswer(answer);
-          setSentimentAnswers(sentimentAns)
+          setSentimentAnswers(sentimentAns);
           setDisabled(false);
         }
         break;
@@ -184,21 +185,21 @@ function App() {
   }, [sentimentWorker]);
 
   useEffect(() => {
-    let titles = []
-    if(searchResult.length) {
-      searchResult.map(item => {
-        titles.push(item.payload.title)
-      })
+    let titles = [];
+    if (searchResult.length) {
+      searchResult.map((item) => {
+        titles.push(item.payload.title);
+      });
     }
 
-    if(titles.length === 5) {
+    if (titles.length === 5) {
       if (sentimentWorker.current) {
         sentimentWorker.current.postMessage({
-          titles: titles
-        })
+          titles: titles,
+        });
       }
     }
-  },[searchResult])
+  }, [searchResult]);
 
   const getResults = () => {
     console.log(input);
@@ -206,7 +207,8 @@ function App() {
       alert("Empty input");
       return;
     }
-   resetAll()
+    resetAll();
+    setLoader(true)
     axios
       .post("http://localhost:3000/search", {
         model: "Xenova",
@@ -218,6 +220,8 @@ function App() {
       })
       .catch((err) => {
         console.log(err);
+      }).finally(() => {
+        setLoader(false)
       });
   };
 
@@ -233,47 +237,60 @@ function App() {
     setSearchResult([]);
     setSelectedAnswer(null);
     setSummaryAnswer(null);
-    setSentimentAnswers([])
-  }
+    setSentimentAnswers([]);
+  };
   return (
     <>
-      <h1 className="text-red-400">Transformers.js</h1>
-      <h2>ML-powered semantic search!</h2>
-
-      <div className="">
-        <div className="">
-          <ModelSelector onChange={(x) => setSelectedModel(x.target.value)} />
-        </div>
+      <div className="h-[30vh]">
+        <h1 className="text-red-400">Transformers.js</h1>
+        <h2>ML-powered semantic search!</h2>
 
         <div className="">
-          {/* <textarea value={input} rows={3} onChange={e => setInput(e.target.value)}></textarea> */}
-          {/* <textarea value={output} rows={3} readOnly></textarea> */}
-          <div className="flex flex-col my-4 justify-center">
-            {/* <label for="" class="form-label">Name</label> */}
-            <input
-              type="text"
-              className=" mb-3 bg-gray-100 p-3 "
-              name=""
-              id=""
-              aria-describedby="helpId"
-              placeholder=""
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onClick={() => resetAll()}
-            />
-            {/* <small id="helpId" className="">Help text</small> */}
+          <div className="">
+            <ModelSelector onChange={(x) => setSelectedModel(x.target.value)} />
+          </div>
+
+          <div className="">
+            {/* <textarea value={input} rows={3} onChange={e => setInput(e.target.value)}></textarea> */}
+            {/* <textarea value={output} rows={3} readOnly></textarea> */}
+            <div className="flex flex-col my-4 justify-center">
+              {/* <label for="" class="form-label">Name</label> */}
+              <input
+                type="text"
+                className=" mb-3 bg-gray-100 p-3 "
+                name=""
+                id=""
+                aria-describedby="helpId"
+                placeholder=""
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onClick={() => resetAll()}
+              />
+              {/* <small id="helpId" className="">Help text</small> */}
+            </div>
           </div>
         </div>
+
+        <button
+          disabled={disabled}
+          onClick={getResults}
+          className="!bg-blue-600 text-white"
+        >
+          Search
+        </button>
       </div>
 
-      <button
-        disabled={disabled}
-        onClick={getResults}
-        className="!bg-blue-600 text-white"
-      >
-        Search
-      </button>
-
+      {progressItems.map((data) => (
+        <div key={data.file}>
+          <Progress text={data.file} percentage={data.progress} />
+        </div>
+      ))}
+      
+      {loader && (
+        <div className="flex justify-center">
+          <div className="loader"></div>
+        </div>
+      )}
       {sentimentAnswers?.length > 0 && (
         <Answers
           answers={sentimentAnswers}

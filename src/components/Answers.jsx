@@ -1,73 +1,30 @@
 import Highlighter from "react-highlight-words";
-import { removeStopwords } from "stopword";
+import { removeStopwords, eng } from "stopword";
 import { useEffect, useState } from "react";
-import { getSentiment, haveSummary } from "../worker";
 import SentimentScale from "./SentimentScale";
 
-const Answers = ({ answers, question }) => {
-  const [sum1, setSum1] = useState([]);
-  const [sum2, setSum2] = useState(null);
+const Answers = ({ answers, question, summary = null, getSummary1 = () => {}, summaryAnswer }) => {
+
   const [answers1, setAnswers1] = useState([]);
   const [loader, setLoader] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
-  const [sentiments, setSentiments] = useState(null);
-
-  // useEffect(() => {
-  //   console.log(answers1)
-  //   setAnswers(answers1)
-  // },[answers1])
-
-  console.log(answers);
-
-  console.log(sum1);
 
   useEffect(() => {
-    let titles = [];
-    if (answers.length) {
-      for (const answer of answers) {
-        titles.push(answer?.payload.title);
-      }
-
-      // setSentiments(titles)
-      sentimentIs(titles).then((res) => {
-        console.log(res);
-        let updatedAnswer = [];
-        for (let i = 0; i < answers.length; i++) {
-          answers[i].sentiment = res[i];
-          updatedAnswer.push(answers[i]);
+    console.log(summaryAnswer)
+    let summaryAns = []
+    if(summaryAnswer){
+      answers?.map((item) => {
+        if(item.id === summaryAnswer.id) {
+          summaryAns.push(summaryAnswer)
+        } else {
+          summaryAns.push(item)
         }
-
-        setAnswers1(updatedAnswer);
-      });
+      })
+      setAnswers1(summaryAns)
+      setLoader(false)
     }
-  }, []);
-
-  // useEffect(() => {
-  //   sentimentIs(sentiments).then(res => {
-  //       console.log(res)
-  //       let updatedAnswer = []
-  //           for(let i = 0; i < answers.length; i++) {
-  //             answers[i].sentiment = res[i]
-  //             updatedAnswer.push(answers[i])
-  //           }
-
-  //       setAnswers(updatedAnswer)
-  //   })
-  // },[sentiments])
-
-  const getSummary = () => {
-    let count = 0;
-
-    const int = setInterval(() => {}, 1000);
-
-    ss1(sum1).then((res) => {
-      console.log(res);
-      setSum2(res);
-    });
-  };
-
-  const ss1 = async (text) => await haveSummary(text);
-  const sentimentIs = async (text) => await getSentiment(text);
+  },[summaryAnswer, answers])
+  console.log(answers);
 
   const displayDescription = (answer) => {
     console.log(answer);
@@ -86,48 +43,12 @@ const Answers = ({ answers, question }) => {
     if(answer.summary) {
       return
     }
+
+    getSummary1(answer)
     setLoader(true)
-    setTimeout(() => {
 
-      ss1(displayDescription(answer))
-      .then((res) => {
-        console.log(res);
-        let updatedAnswer = [];
-        answers.map((item) => {
-          if (item.id == answer.id) {
-            item.summary = res[0].summary_text;
-          }
-          updatedAnswer.push(item);
-        });
-        setAnswers1(updatedAnswer);
-        
-        // setAnswers(prev =>
-          //     prev.map(ans => ans.id === answer.id ? { ...answer, summary: res[0].summary_text} : answer)
-          // )
-        })
-        .catch((err) => {
-          console.log(err);
-        }).finally(() =>{
-          setLoader(false)
-        });
-      },[1000])
   };
 
-  const getSentimentOfResult = async (title) => {
-    let sentiment = {
-      label: "",
-      score: 0,
-    };
-
-    sentimentIs(title).then((res) => {
-      console.log(res);
-      sentiment.label = res[0].label;
-      sentiment.score = res[0].score;
-    });
-
-    console.log("sentiment", sentiment);
-    return sentiment;
-  };
 
   console.log(answers);
   const arr = question
@@ -135,6 +56,8 @@ const Answers = ({ answers, question }) => {
     .trim()
     .split(" ");
   // console.log(removeStopwords(arr));
+
+  const customStopWords = ['news']
   return (
     <div>
      
@@ -144,20 +67,21 @@ const Answers = ({ answers, question }) => {
           </div>
         )}
         <ul className={`${loader ? 'blur-sm' : ''}`}>
-          {answers1?.map((item) => (
+          {answers?.map((item) => (
             <div key={item.id} className="my-5 p-2">
               <h3 className="text-xl font-semibold">{item.payload.title}</h3>
-              <div className="flex justify-between">
+              <div className="flex justify-between my-2">
                 <p className="font-bold text-indigo-600">Similarity score: {item.score}</p>
                 <p>Article link: {item?.payload?.link ? <a href={item?.payload?.link} target="_blank" className="underline"> {item?.payload?.source_id}</a> : '-'}</p>
               </div>
               <div>
                 {item?.summary && (
-                  <p className="font-semibold">Summary: <span className="italic"> {item?.summary}</span></p>
+                  <p className="font-semibold p-3 bg-gray-100 my-2">Summary: <span className="text-justify"> {item?.summary}</span></p>
                 )}
                 {/* <p>Sentiments:{item?.sentiment?.label} </p> */}
                 {item?.sentiment && (
                   <SentimentScale sentiment={item?.sentiment} />
+                  
                 )}
                 <div
                   onClick={() => setSelectedAnswer(item)}
@@ -165,13 +89,14 @@ const Answers = ({ answers, question }) => {
                     selectedAnswer?.id === item.id
                       ? "open-answer"
                       : "close-answer"
-                  } max-h-[20vh] overflow-auto p-3 text-justify bg-gray-100`}
+                  } max-h-[25vh] overflow-auto p-3 text-justify bg-gray-100`}
                 >
                   <Highlighter
                     highlightClassName="YourHighlightClass"
-                    searchWords={removeStopwords(arr)}
+                    searchWords={removeStopwords(arr,[...eng,...customStopWords])}
                     autoEscape={true}
                     textToHighlight={displayDescription(item)}
+                    caseSensitive={true}
                   />
                 </div>
                 <button

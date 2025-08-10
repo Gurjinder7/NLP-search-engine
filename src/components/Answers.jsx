@@ -24,10 +24,13 @@ const Answers = ({ answers, question, summary = null, getSummary1 = () => {}, su
       setLoader(false)
     }
   },[summaryAnswer, answers])
-  console.log(answers);
+  // console.log(answers);
+
+
 
   const displayDescription = (answer) => {
-    console.log(answer);
+    // console.log(answer);
+ 
     if (answer?.payload.full_description) {
       return answer?.payload.full_description;
     } else if (answer?.payload.content) {
@@ -50,14 +53,14 @@ const Answers = ({ answers, question, summary = null, getSummary1 = () => {}, su
   };
 
 
-  console.log(answers);
+  // console.log(answers);
   const arr = question
     .replace(/[^a-zA-Z0-9]/g, " ")
     .trim()
     .split(" ");
   // console.log(removeStopwords(arr));
 
-  const customStopWords = ['news']
+  const customStopWords = ['news','vs','called','city','travel','good']
   return (
     <div>
      

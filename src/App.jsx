@@ -23,6 +23,8 @@ function App() {
   const [summaryAnswer, setSummaryAnswer] = useState(null);
   const [sentimentAnswers, setSentimentAnswers] = useState([]);
   const [loader, setLoader] = useState(false)
+  const [simScore, setSimScore] = useState(0)
+
 
   const worker = useRef(null);
   const sentimentWorker = useRef(null);
@@ -149,7 +151,7 @@ function App() {
       case "complete":
         // Generation complete: re-enable the "Translate" button
         if (searchResult.length) {
-          console.log(e?.data?.output);
+          // console.log(e?.data?.output);
           let sentiments = e?.data?.output;
           let sentimentAns = [];
           for (let i = 0; i < searchResult.length; i++) {
@@ -186,9 +188,12 @@ function App() {
 
   useEffect(() => {
     let titles = [];
+    let sim = 0
+    // setSimScore(sim) 
     if (searchResult.length) {
       searchResult.map((item) => {
         titles.push(item.payload.title);
+        sim += item.score
       });
     }
 
@@ -198,6 +203,8 @@ function App() {
           titles: titles,
         });
       }
+
+      console.log((sim/5).toFixed(4))
     }
   }, [searchResult]);
 
@@ -246,9 +253,9 @@ function App() {
         <h2>ML-powered semantic search!</h2>
 
         <div className="">
-          <div className="">
+          {/* <div className="">
             <ModelSelector onChange={(x) => setSelectedModel(x.target.value)} />
-          </div>
+          </div> */}
 
           <div className="">
             {/* <textarea value={input} rows={3} onChange={e => setInput(e.target.value)}></textarea> */}

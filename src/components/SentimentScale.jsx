@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 const SentimentScale = ({sentiment}) => {
-    console.log(sentiment)
+    // console.log(sentiment)
     const [scale, setScale] = useState(0)
     const returnScale = (label) => {
     }

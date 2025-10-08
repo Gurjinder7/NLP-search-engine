@@ -1,27 +1,9 @@
-# cmp-7027x-search-react
+# NLP search engine
 
+### The React project loads models from Transformer.js and uses them for sentiment analysis of the news report, and providesa  feature for summarization
+* For sentiment analysis - Xenova/distilbert-base-uncased-finetuned-sst-2-english
+* For summarization - Xenova/distilbart-cnn-6-6
 
-# flow:
-
-* app.jsx
-  * let user search 
-  * on search use model type and user query 
-  * make an axios call
-
-* In the Node side, 
-  * use the selected model to create embedding
-  * do search with qdrant
-  * get results and payload for all of them
-  * return the result to UI
-
-* In the UI, 
-  * perform sentiment analysis on title
-  * perform summary of each description
-  * add that to the answer object
-  * Show, 
-    * matching score
-    * sentiment and its score
-    * summary 
-    * url
-    * full description in collapsable
- 
+<img width="2466" height="890" alt="Screenshot 2025-08-16 185434" src="https://github.com/user-attachments/assets/c3c59af2-12d8-439b-9b73-e691e4c32c5a" />
+<img width="2170" height="932" alt="Screenshot 2025-08-16 181304" src="https://github.com/user-attachments/assets/ddccb674-8dc8-4b8b-8ccb-9cbf165e5ffc" />
+<img width="2521" height="1563" alt="Screenshot 2025-08-16 184909" src="https://github.com/user-attachments/assets/57adeed6-8a24-439a-bd8e-6d2ca7863ded" />
